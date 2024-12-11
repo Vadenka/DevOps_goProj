@@ -3,37 +3,50 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Проверка работоспособности кода (echo)
+      # Шаг 1: Клонирование репозитория в CI/CD
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Шаг 2: Проверка кода
       - name: Echo Test
         run: echo "Running basic tests!"
 
-      # Сборка Docker образа
+      # Шаг 3: Сборка Docker образа (локальная проверка)
       - name: Build Docker image
         run: docker build -t my-go-api .
 
-      # Установка SSH соединения для деплоя
+      # Шаг 4: Настройка SSH
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Копирование файлов на удалённый сервер
-      - name: Deploy to server
+      # Шаг 5: Обновление кода на сервере через git pull
+      - name: Update code on server
         run: |
-          scp docker-compose.yml root@93.88.178.186:/root/
-          ssh root@93.88.178.186 "docker-compose -f /root/docker-compose.yml up -d --build"
+          ssh student@93.88.178.186 "
+            cd ~/Antonov_HW/DevOps_goProj &&
+            git reset --hard HEAD && # Убедиться, что рабочее состояние чистое
+            git pull origin master
+          "
 
-      # Проверка работы API через curl
+      # Шаг 6: Запуск контейнера на сервере
+      - name: Deploy and start Docker container
+        run: |
+          ssh student@93.88.178.186 "
+            cd ~/Antonov_HW/DevOps_goProj &&
+            docker-compose down &&
+            docker-compose up -d --build
+          "
+
+      # Шаг 7: Проверка работы API через curl
       - name: Test API
         run: |
           sleep 5 # Дать время на запуск контейнера
