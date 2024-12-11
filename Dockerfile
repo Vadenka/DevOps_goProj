@@ -7,11 +7,11 @@ RUN apk add --no-cache git
 # Рабочая директория внутри контейнера
 WORKDIR /app
 
-# Загружаем зависимости
-RUN go mod init example.com/m/v2
-
 # Копируем все файлы в контейнер
 COPY . .
+
+# Загружаем зависимости
+RUN go mod init example.com/m/v2
 
 # Сборка приложения
 RUN go build -o app .
