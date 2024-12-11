@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Проверка работоспособности кода (echo)
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Echo Test
+        run: echo "Running basic tests!"
+
+      # Сборка Docker образа
+      - name: Build Docker image
+        run: docker build -t my-go-api .
+
+      # Установка SSH соединения для деплоя
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Копирование файлов на удалённый сервер
+      - name: Deploy to server
+        run: |
+          scp docker-compose.yml root@93.88.178.186:/root/
+          ssh root@93.88.178.186 "docker-compose -f /root/docker-compose.yml up -d --build"
+
+      # Проверка работы API через curl
+      - name: Test API
+        run: |
+          sleep 5 # Дать время на запуск контейнера
+          curl http://93.88.178.186:6003
