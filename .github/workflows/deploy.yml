@@ -20,6 +20,6 @@ jobs:
 
       # Шаг 3: Сборка Docker образа (локальная проверка)
       - name: Build Docker image
-        run: docker build -t my-go-api .
+        run: docker compose up -d --build
 
       
