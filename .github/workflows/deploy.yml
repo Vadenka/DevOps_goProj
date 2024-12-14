@@ -22,32 +22,4 @@ jobs:
       - name: Build Docker image
         run: docker build -t my-go-api .
 
-      # Шаг 4: Настройка SSH
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      # Шаг 5: Обновление кода на сервере через git pull
-      - name: Update code on server
-        run: |
-          ssh student@93.88.178.186 "
-            cd ~/Antonov_HW/DevOps_goProj &&
-            git reset --hard HEAD && # Убедиться, что рабочее состояние чистое
-            git pull origin master
-          "
-
-      # Шаг 6: Запуск контейнера на сервере
-      - name: Deploy and start Docker container
-        run: |
-          ssh student@93.88.178.186 "
-            cd ~/Antonov_HW/DevOps_goProj &&
-            docker-compose down &&
-            docker-compose up -d --build
-          "
-
-      # Шаг 7: Проверка работы API через curl
-      - name: Test API
-        run: |
-          sleep 5 # Дать время на запуск контейнера
-          curl http://93.88.178.186:6003
+      
