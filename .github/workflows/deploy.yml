@@ -22,6 +22,9 @@ jobs:
       - name: Build Docker image
         run: docker compose up -d --build
 
+      - name: Check docker container
+        run: docker ps -a
+
       - name: Ping API
         run: curl -X GET http://localhost:6003/
 
