@@ -32,18 +32,25 @@ func savePhraseToDB(phrase string) {
 // Функция для обработки запросов
 func handler(w http.ResponseWriter, r *http.Request) {
     phrase := "Hello, Vladislav!"
+    
+    // Если запрос POST, то сохраняем фразу в БД
     if r.Method == http.MethodPost {
         phrase = r.FormValue("phrase")
         savePhraseToDB(phrase)
     }
-    fmt.Fprintf(w, phrase)
+    
+    // Выводим фразу на страницу
+    fmt.Fprintf(w, "Current phrase: %s", phrase)
 }
 
 func main() {
     initDB()
     defer db.Close()
-
+    
+    // Устанавливаем обработчик маршрута
     http.HandleFunc("/", handler)
+    
     port := "6003"
     fmt.Printf("Server running on port %s\n", port)
     http.ListenAndServe(":"+port, nil)
+}
