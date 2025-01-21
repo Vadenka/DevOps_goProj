@@ -7,4 +7,25 @@ services:
       dockerfile: Dockerfile
     ports:
       - "6003:6003"
+
+
+    enviroment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=appdb
+    restart: unless-stopped
+    depends on:
+      - postgres
+  postgres:
+    image: postgres13
+    enviroment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+
+      
     restart: unless-stopped
