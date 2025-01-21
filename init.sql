@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS phrases (
-  id SERIAL PRIMARY KEY,
-  content TEXT NOT NULL
-);
