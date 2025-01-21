@@ -31,6 +31,6 @@ jobs:
         run: curl -X GET http://localhost:6003/
 
 
-     # Шаг 6: Завершение работы
+       # Шаг 6: Завершение работы
       - name: Stop Docker containers
         run: docker compose down
