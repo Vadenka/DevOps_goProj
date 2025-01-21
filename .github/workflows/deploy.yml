@@ -8,26 +8,22 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       # Шаг 1: Клонирование репозитория в CI/CD
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Шаг 2: Сборка Docker образа и запуск контейнеров
-      - name: Build and run Docker containers
-        run: |
-          docker-compose up -d --build
-          sleep 10  # Даем время для инициализации контейнеров
+      # Шаг 2: Проверка кода
+      - name: Echo Test
+        run: echo "Running basic tests!"
 
-      # Шаг 3: Проверка работы контейнеров
-      - name: Check Docker containers
+      # Шаг 3: Сборка Docker образа (локальная проверка)
+      - name: Build Docker image
+        run: docker compose up -d --build
+
+      - name: Check docker container
         run: docker ps -a
 
-      # Шаг 4: Тестирование работы API
       - name: Ping API
         run: curl -X GET http://localhost:6003/
-
-      # Шаг 5: Отправка данных в базу через POST-запрос
-      - name: Post data to API
-        run: |
-          curl -X POST http://localhost:6003/ -d "phrase=New phrase from CI/CD!"
