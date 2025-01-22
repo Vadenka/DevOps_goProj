@@ -5,7 +5,7 @@ FROM golang:1.20
 WORKDIR /app
 
 # Копируем файлы модуля
-COPY go.mod ./
+COPY go.mod go.sum ./
 
 # Загружаем зависимости
 RUN go mod download
