@@ -61,7 +61,7 @@ func handleNameChange(w http.ResponseWriter, r *http.Request) {
   }
 
   // Сохраняем имя в базе данных
-  fmt.Println("Запрос с именем:", name)
+  log.Println("Запрос с именем:", name)
   _, err := db.Exec("INSERT INTO users (name) VALUES ($1)", name)
   if err != nil {
    http.Error(w, "Не удалось сохранить имя", http.StatusInternalServerError)
