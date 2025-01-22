@@ -49,6 +49,7 @@ func main() {
 
  // Маршруты
  http.HandleFunc("/", handleNameChange)
+ http.HandleFunc("/GET", handleGET)
 
  // Запускаем сервер
  port := "6003"
@@ -76,6 +77,22 @@ func handleNameChange(w http.ResponseWriter, r *http.Request) {
   }
 
   fmt.Fprintf(w, "Имя %s сохранено в базе данных!", name)
+ } else {
+  http.Error(w, "Неверный метод запроса", http.StatusMethodNotAllowed)
+ }
+}
+
+func handleGET(w http.ResponseWriter, r *http.Request) {
+ 
+  // Сохраняем имя в базе данных  
+  users, err := db.Exec("SELECT * FROM users")
+  if err != nil {
+   http.Error(w, "Не удалось произвести выборку", http.StatusInternalServerError)
+   log.Println("Ошибка при сохранении имени:", err)
+   return
+  }
+
+  fmt.Fprintf(w, "Имя %s сохранено в базе данных!", users[0].name)
  } else {
   http.Error(w, "Неверный метод запроса", http.StatusMethodNotAllowed)
  }
