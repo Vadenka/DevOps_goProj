@@ -7,25 +7,22 @@ services:
       dockerfile: Dockerfile
     ports:
       - "6003:6003"
-
-
-    enviroment:
+    environment:  # Исправлено
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=user
       - DB_PASSWORD=password
       - DB_NAME=appdb
     restart: unless-stopped
-    depends on:
+    depends_on:  # Исправлено
       - postgres
+
   postgres:
-    image: postgres13
-    enviroment:
+    image: postgres:13  # Исправлено (добавлен двоеточие)
+    environment:  # Исправлено
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: appdb
     ports:
       - "5432:5432"
-
-      
     restart: unless-stopped
