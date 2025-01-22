@@ -38,6 +38,12 @@ func main() {
   log.Fatal(err)
  }
 
+ // Создаем таблицу, если она не существует
+ err = createTable()
+ if err != nil {
+  log.Fatal(err)
+ }
+
  // Печатаем сообщение об успешном подключении
  fmt.Println("Successfully connected to the database!")
 
@@ -48,6 +54,17 @@ func main() {
  port := "6003"
  fmt.Printf("Server running on port %s\n", port)
  http.ListenAndServe(":"+port, nil)
+}
+
+// Функция для создания таблицы
+func createTable() error {
+ query := 
+ CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL
+ );
+ _, err := db.Exec(query)
+ return err
 }
 
 // Обработчик изменения имени
