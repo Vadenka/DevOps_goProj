@@ -1,6 +1,7 @@
 package main
 
 import (
+ "strings"
  "database/sql"
  "fmt"
  "log"
@@ -99,10 +100,12 @@ func handleGET(w http.ResponseWriter, r *http.Request) {
   return
  }
 
+ builder := strings.Builder{}
+ 
  // Печатаем всех пользователей
  var id int
  var name string
- fmt.Fprintln(w, "Список пользователей:")
+ builder.WriteString("Список пользователей: \n")
 
  // Итерируем по всем строкам результата
  for rows.Next() {
@@ -114,9 +117,10 @@ func handleGET(w http.ResponseWriter, r *http.Request) {
    return
   }
   // Выводим данные о пользователе
-  fmt.Fprintf(w, "ID: %d, Имя: %s\n", id, name)
+  builder.WriteString (fmt.Sprintf("ID: %d, Имя: %s\n", id, name))
  }
-
+ fmt.Fprintf(w, "%s", builder.String())
+ 
  // Проверка на ошибку после завершения итерации по строкам
  if err := rows.Err(); err != nil {
   http.Error(w, "Ошибка при обработке данных", http.StatusInternalServerError)
