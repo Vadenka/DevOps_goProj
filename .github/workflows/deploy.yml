@@ -32,4 +32,4 @@ jobs:
         
       # Шаг 6: Пинг API ддя проверки работы приложения
       - name: Ping API
-        run: curl -X POST -d "name=Vladislav" http://localhost:6003/
+        run: curl -X POST -form 'name="Vladislav"' http://localhost:6003/
