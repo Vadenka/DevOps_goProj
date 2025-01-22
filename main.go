@@ -39,12 +39,7 @@ func main() {
  }
 
  // Создаём таблицу при старте приложения, если она не существует
- _, err = db.Exec(
-  CREATE TABLE IF NOT EXISTS users (
-   id SERIAL PRIMARY KEY,
-   name VARCHAR(100) NOT NULL
-  );
- )
+ _, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL);")
  if err != nil {
   log.Fatal("Ошибка при создании таблицы:", err)
  }
