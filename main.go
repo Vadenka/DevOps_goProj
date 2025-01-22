@@ -82,18 +82,44 @@ func handleNameChange(w http.ResponseWriter, r *http.Request) {
  }
 }
 
+// Обработчик для GET запроса, который извлекает всех пользователей
 func handleGET(w http.ResponseWriter, r *http.Request) {
- 
-  // Сохраняем имя в базе данных  
-  users, err := db.Exec("SELECT * FROM users")
+ // Выполняем запрос для извлечения всех пользователей
+ rows, err := db.Query("SELECT id, name FROM users")  // Запрос, извлекающий ID и имя пользователей
+ if err != nil {
+  http.Error(w, "Не удалось произвести выборку", http.StatusInternalServerError)
+  log.Println("Ошибка при выполнении запроса:", err)
+  return
+ }
+ defer rows.Close()  // Закрываем rows после завершения работы
+
+ // Если пользователей нет в базе
+ if !rows.Next() {
+  http.Error(w, "Пользователи не найдены", http.StatusNotFound)
+  return
+ }
+
+ // Печатаем всех пользователей
+ var id int
+ var name string
+ fmt.Fprintln(w, "Список пользователей:")
+
+ // Итерируем по всем строкам результата
+ for rows.Next() {
+  // Извлекаем данные для каждой строки
+  err := rows.Scan(&id, &name)
   if err != nil {
-   http.Error(w, "Не удалось произвести выборку", http.StatusInternalServerError)
-   log.Println("Ошибка при сохранении имени:", err)
+   http.Error(w, "Ошибка при извлечении данных", http.StatusInternalServerError)
+   log.Println("Ошибка при извлечении данных:", err)
    return
   }
+  // Выводим данные о пользователе
+  fmt.Fprintf(w, "ID: %d, Имя: %s\n", id, name)
+ }
 
-  fmt.Fprintf(w, "Имя %s сохранено в базе данных!", users[0].name)
- } else {
-  http.Error(w, "Неверный метод запроса", http.StatusMethodNotAllowed)
+ // Проверка на ошибку после завершения итерации по строкам
+ if err := rows.Err(); err != nil {
+  http.Error(w, "Ошибка при обработке данных", http.StatusInternalServerError)
+  log.Println("Ошибка при обработке данных:", err)
  }
 }
