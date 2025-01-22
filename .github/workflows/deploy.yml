@@ -22,13 +22,14 @@ jobs:
       - name: Build Docker image
         run: docker compose up -d --build
 
+      # Шаг 4: Ожидание 10 секунд перед выполнением запроса
       - name: Wait for the API to be ready
         run: sleep 10  # Подождите 10 секунд перед выполнением запроса
 
-      # Шаг 4: Проверка запущенных контейнеров
+      # Шаг 5: Проверка запущенных контейнеров
       - name: Check docker container
         run: docker ps -a
         
-      # Шаг 5: Пинг API ддя проверки работы приложения
+      # Шаг 6: Пинг API ддя проверки работы приложения
       - name: Ping API
         run: curl -X GET http://localhost:6003/
