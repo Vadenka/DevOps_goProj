@@ -33,3 +33,7 @@ jobs:
       # Шаг 6: Пинг API ддя проверки работы приложения
       - name: Ping API
         run: curl -X POST --form 'name="Vladislav"' http://localhost:6003/
+
+      # Шаг 7: Выборка данных из БД
+      - name: Data extraction
+        run: curl -X GET http://localhost:6003/GET
