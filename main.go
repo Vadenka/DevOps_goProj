@@ -35,18 +35,18 @@ func main() {
  // Пингуем БД
  err = db.Ping()
  if err != nil {
-  log.Fatal(err)
+  log.Fatal("Ошибка при подключении к базе данных:", err)
  }
 
  // Печатаем сообщение об успешном подключении
- fmt.Println("Successfully connected to the database!")
+ fmt.Println("Успешно подключено к базе данных!")
 
  // Маршруты
  http.HandleFunc("/", handleNameChange)
 
  // Запускаем сервер
  port := "6003"
- fmt.Printf("Server running on port %s\n", port)
+ fmt.Printf("Сервер работает на порту %s\n", port)
  http.ListenAndServe(":"+port, nil)
 }
 
@@ -56,20 +56,21 @@ func handleNameChange(w http.ResponseWriter, r *http.Request) {
   // Извлекаем имя из тела запроса
   name := r.FormValue("name")
   if name == "" {
-   http.Error(w, "Name is required", http.StatusBadRequest)
+   http.Error(w, "Имя обязательно", http.StatusBadRequest)
    return
   }
 
   // Сохраняем имя в базе данных
+  fmt.Println("Запрос с именем:", name)
   _, err := db.Exec("INSERT INTO users (name) VALUES ($1)", name)
   if err != nil {
-   http.Error(w, "Failed to save name", http.StatusInternalServerError)
-   log.Println("Error saving name:", err)
+   http.Error(w, "Не удалось сохранить имя", http.StatusInternalServerError)
+   log.Println("Ошибка при сохранении имени:", err)
    return
   }
 
-  fmt.Fprintf(w, "Name %s saved to database!", name)
+  fmt.Fprintf(w, "Имя %s сохранено в базе данных!", name)
  } else {
-  http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+  http.Error(w, "Неверный метод запроса", http.StatusMethodNotAllowed)
  }
 }
