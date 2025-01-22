@@ -29,8 +29,3 @@ jobs:
       # Шаг 5: Пинг API ддя проверки работы приложения
       - name: Ping API
         run: curl -X GET http://localhost:6003/
-
-
-      # Шаг 6: Завершение работы
-      - name: Stop Docker containers
-        run: docker compose down
