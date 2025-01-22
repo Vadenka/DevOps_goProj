@@ -6,8 +6,8 @@ import (
  "log"
  "net/http"
  "os"
+
  _ "github.com/lib/pq"
- "time"
 )
 
 var db *sql.DB
@@ -21,47 +21,33 @@ func main() {
  dbName := os.Getenv("DB_NAME")
 
  // Формируем строку подключения
- connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPassword, dbName, dbHost, dbPort)
+ connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+  dbUser, dbPassword, dbName, dbHost, dbPort)
 
  // Открываем подключение к БД
  var err error
  db, err = sql.Open("postgres", connStr)
  if err != nil {
-  log.Fatal("Ошибка при подключении к базе данных:", err)
+  log.Fatal(err)
  }
  defer db.Close()
-
- // Настройки пула соединений
- db.SetMaxOpenConns(10)
- db.SetMaxIdleConns(10)
- db.SetConnMaxLifetime(time.Hour)
 
  // Пингуем БД
  err = db.Ping()
  if err != nil {
-  log.Fatal("Ошибка при подключении к базе данных:", err)
+  log.Fatal(err)
  }
 
- // Создаём таблицу при старте приложения, если она не существует
- _, err = db.Exec(
-  CREATE TABLE IF NOT EXISTS users (
-   id SERIAL PRIMARY KEY,
-   name VARCHAR(100) NOT NULL
-  );
- )
- if err != nil {
-  log.Fatal("Ошибка при создании таблицы:", err)
- }
-
- fmt.Println("Успешно подключено к базе данных!")
+ // Печатаем сообщение об успешном подключении
+ fmt.Println("Successfully connected to the database!")
 
  // Маршруты
  http.HandleFunc("/", handleNameChange)
 
  // Запускаем сервер
  port := "6003"
- fmt.Printf("Сервер работает на порту %s\n", port)
- log.Fatal(http.ListenAndServe(":"+port, nil))
+ fmt.Printf("Server running on port %s\n", port)
+ http.ListenAndServe(":"+port, nil)
 }
 
 // Обработчик изменения имени
@@ -70,20 +56,20 @@ func handleNameChange(w http.ResponseWriter, r *http.Request) {
   // Извлекаем имя из тела запроса
   name := r.FormValue("name")
   if name == "" {
-   http.Error(w, "Имя обязательно", http.StatusBadRequest)
+   http.Error(w, "Name is required", http.StatusBadRequest)
    return
   }
 
   // Сохраняем имя в базе данных
-  fmt.Println("Запрос с именем:", name)
   _, err := db.Exec("INSERT INTO users (name) VALUES ($1)", name)
   if err != nil {
-   http.Error(w, "Не удалось сохранить имя", http.StatusInternalServerError)
-   log.Println("Ошибка при сохранении имени:", err)
+   http.Error(w, "Failed to save name", http.StatusInternalServerError)
+   log.Println("Error saving name:", err)
    return
   }
-  fmt.Fprintf(w, "Имя %s сохранено в базе данных!", name)
+
+  fmt.Fprintf(w, "Name %s saved to database!", name)
  } else {
-  http.Error(w, "Неверный метод запроса", http.StatusMethodNotAllowed)
+  http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
  }
 }
